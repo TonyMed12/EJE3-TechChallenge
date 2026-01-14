@@ -3,9 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Mantenimiento Inteligente</title>
+    <link rel="shortcut icon" href="src/images/favicon.png" type="image/x-icon">
 </head>
 <body>
-    
+    <header class="main-header">
+        <div class="logo-container">
+            <h1>Traxión</h1>
+            <p>Agente de Mantenimiento Predictivo</p>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        
+        <section class="input-panel">
+            <h2>🚚 Datos de la Unidad</h2>
+            <form id="riskForm" onsubmit="event.preventDefault(); calcularRiesgo();">
+                
+                <div class="form-group">
+                    <label for="km">Kilometraje actual</label>
+                    <input type="number" id="km" placeholder="Ej. 15000" required>
+                    <small>KM recorridos desde el último servicio mayor.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="months">Meses sin servicio</label>
+                    <input type="number" id="months" placeholder="Ej. 6" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="failures">Historial reciente de fallas</label>
+                    <select id="failures">
+                        <option value="0">0 - Sin fallas recientes</option>
+                        <option value="1">1-2 - Fallas menores aisladas</option>
+                        <option value="3">3+ - Fallas recurrentes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="severity">Severidad de alertas previas</label>
+                    <select id="severity">
+                        <option value="low">Baja (Accesorios, Confort)</option>
+                        <option value="medium">Media (Sensores, Eléctrico)</option>
+                        <option value="high">Alta (Motor, Transmisión, Frenos)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="driving">Estilo de conducción (Telemetría)</label>
+                    <select id="driving">
+                        <option value="smooth">Suave / Eficiente</option>
+                        <option value="normal">Normal</option>
+                        <option value="aggressive">Agresiva (Frenadas bruscas/Exceso vel.)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-analyze">Analizar Riesgo 🔍</button>
+            </form>
+        </section>
+
+        <section class="results-panel">
+            <h2>Diagnóstico de Riesgo</h2>
+            
+            <div class="traffic-light-container">
+                <div id="light-red" class="light"></div>
+                <div id="light-yellow" class="light"></div>
+                <div id="light-green" class="light active"></div> </div>
+
+            <div class="score-card">
+                <h3>Score de Salud</h3>
+                <span id="scoreValue" class="big-number">--</span>
+                <span class="scale">/ 100</span>
+            </div>
+
+            <div class="action-card">
+                <h3>Acción Recomendada</h3>
+                <p id="actionText" class="status-text">Esperando datos...</p>
+            </div>
+
+            <div class="reasons-card">
+                <h3>Factores de Riesgo Detectados:</h3>
+                <ul id="reasonsList">
+                    <li>El agente analizará las variables ingresadas.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <br><p>Prototipo Hackatón Bécalos Traxión 2025 - Eje 3</p>
+        <p>José Antonio Medina Ayala</p>
+        <p>Aarón Alessandro Medina Ayala</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
