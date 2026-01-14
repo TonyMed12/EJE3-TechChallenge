@@ -1,102 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mantenimiento Inteligente</title>
-    <link rel="shortcut icon" href="src/images/favicon.png" type="image/x-icon">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mantenimiento Inteligente | Traxión</title>
+
+    <link rel="shortcut icon" href="src/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
     <header class="main-header">
         <div class="logo-container">
-            <h1>Traxión</h1>
-            <p>Agente de Mantenimiento Predictivo</p>
+            <div class="brand-badge">
+                <span class="badge-dot"></span>
+                <div>
+                    <h1>Traxión</h1>
+                    <p>Agente de Mantenimiento Predictivo (Eje 3)</p>
+                </div>
+            </div>
+
+            <p style="margin-left:auto; text-align:right;">
+                Prototipo Hackatón Bécalos Traxión 2025
+            </p>
         </div>
     </header>
 
     <main class="dashboard-container">
-        
+        <!-- =======================
+         INPUT PANEL
+         ======================= -->
         <section class="input-panel">
             <h2>🚚 Datos de la Unidad</h2>
+
+            <!-- Nota: quitamos required para demostrar manejo de datos incompletos -->
             <form id="riskForm" onsubmit="event.preventDefault(); calcularRiesgo();">
-                
                 <div class="form-group">
-                    <label for="km">Kilometraje actual</label>
-                    <input type="number" id="km" placeholder="Ej. 15000" required>
-                    <small>KM recorridos desde el último servicio mayor.</small>
+                    <label for="km">Kilometraje desde el último servicio</label>
+                    <input type="number" id="km" placeholder="Ej. 15000" min="0" />
+                    <small>KM recorridos desde el último servicio mayor (si no lo tienes, déjalo vacío).</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="months">Meses sin servicio</label>
-                    <input type="number" id="months" placeholder="Ej. 6" required>
+                    <label for="months">Meses sin servicio preventivo</label>
+                    <input type="number" id="months" placeholder="Ej. 6" min="0" />
+                    <small>Tiempo aproximado desde el último servicio preventivo.</small>
                 </div>
 
                 <div class="form-group">
                     <label for="failures">Historial reciente de fallas</label>
                     <select id="failures">
+                        <option value="">(Opcional) No disponible</option>
                         <option value="0">0 - Sin fallas recientes</option>
                         <option value="1">1-2 - Fallas menores aisladas</option>
                         <option value="3">3+ - Fallas recurrentes</option>
                     </select>
+                    <small>Basado en códigos/alertas recientes o reportes de operación.</small>
                 </div>
 
                 <div class="form-group">
                     <label for="severity">Severidad de alertas previas</label>
                     <select id="severity">
+                        <option value="">(Opcional) No disponible</option>
                         <option value="low">Baja (Accesorios, Confort)</option>
                         <option value="medium">Media (Sensores, Eléctrico)</option>
                         <option value="high">Alta (Motor, Transmisión, Frenos)</option>
                     </select>
+                    <small>La severidad aumenta el riesgo de falla y prioridad de taller.</small>
                 </div>
 
                 <div class="form-group">
                     <label for="driving">Estilo de conducción (Telemetría)</label>
                     <select id="driving">
+                        <option value="">(Opcional) No disponible</option>
                         <option value="smooth">Suave / Eficiente</option>
                         <option value="normal">Normal</option>
-                        <option value="aggressive">Agresiva (Frenadas bruscas/Exceso vel.)</option>
+                        <option value="aggressive">Agresiva (Frenadas bruscas / exceso vel.)</option>
                     </select>
+                    <small>Conducción agresiva tiende a acelerar desgaste (frenos, suspensión, transmisión).</small>
+                </div>
+
+                <!-- Extra recomendado: operación / ruta -->
+                <div class="form-group">
+                    <label for="route">Tipo de operación / ruta</label>
+                    <select id="route">
+                        <option value="">(Opcional) No disponible</option>
+                        <option value="highway">Carretera</option>
+                        <option value="mixed">Mixta</option>
+                        <option value="urban">Urbana</option>
+                    </select>
+                    <small>Operación urbana suele elevar desgaste por arranques, frenadas y baches.</small>
+                </div>
+
+                <!-- Extra recomendado: falla repetida -->
+                <div class="form-group">
+                    <label for="repeated">¿Falla repetida?</label>
+                    <select id="repeated">
+                        <option value="">(Opcional) No disponible</option>
+                        <option value="no">No</option>
+                        <option value="yes">Sí</option>
+                    </select>
+                    <small>Una falla recurrente aumenta la probabilidad de intervención prioritaria.</small>
                 </div>
 
                 <button type="submit" class="btn-analyze">Analizar Riesgo 🔍</button>
             </form>
         </section>
 
+        <!-- =======================
+         RESULTS PANEL
+         ======================= -->
         <section class="results-panel">
             <h2>Diagnóstico de Riesgo</h2>
-            
-            <div class="traffic-light-container">
-                <div id="light-red" class="light"></div>
-                <div id="light-yellow" class="light"></div>
-                <div id="light-green" class="light active"></div> </div>
 
-            <div class="score-card">
-                <h3>Score de Salud</h3>
-                <span id="scoreValue" class="big-number">--</span>
-                <span class="scale">/ 100</span>
+            <div class="traffic-light-container" aria-label="Semáforo de riesgo">
+                <div id="light-red" class="light" title="Alto"></div>
+                <div id="light-yellow" class="light" title="Medio"></div>
+                <div id="light-green" class="light active light--green" title="Bajo"></div>
             </div>
 
-            <div class="action-card">
-                <h3>Acción Recomendada</h3>
-                <p id="actionText" class="status-text">Esperando datos...</p>
+            <div class="cards">
+                <div class="card score-card">
+                    <h3>Score de Salud</h3>
+                    <div>
+                        <span id="scoreValue" class="big-number">--</span>
+                        <span class="scale">/ 100</span>
+                    </div>
+                    <div class="divider"></div>
+                    <div style="color: rgba(255,255,255,0.70); font-size: 0.9rem;">
+                        Integra variables operativas, mecánicas y de conducción.
+                    </div>
+                </div>
+
+                <div class="card action-card">
+                    <h3>Acción Recomendada</h3>
+                    <p id="actionText" class="status-text">
+                        <span class="pill"><span class="dot"></span> ESPERANDO</span>
+                        <span class="divider"></span>
+                        Ingresa datos y presiona <strong>Analizar Riesgo</strong>.
+                    </p>
+                </div>
             </div>
 
-            <div class="reasons-card">
-                <h3>Factores de Riesgo Detectados:</h3>
-                <ul id="reasonsList">
+            <div class="card reasons-card" style="margin-top: 12px;">
+                <h3>Factores de Riesgo Detectados</h3>
+                <ul id="reasonsList" class="list">
                     <li>El agente analizará las variables ingresadas.</li>
                 </ul>
             </div>
-        </section>
 
+            <!-- El script.js crea automáticamente la sección de supuestos si hace falta -->
+        </section>
     </main>
 
-    <footer>
-        <br><p>Prototipo Hackatón Bécalos Traxión 2025 - Eje 3</p>
+    <footer class="footer">
+        <p>Prototipo Hackatón Bécalos Traxión 2025 - Eje 3</p>
         <p>José Antonio Medina Ayala</p>
         <p>Aarón Alessandro Medina Ayala</p>
     </footer>
 
     <script src="script.js"></script>
 </body>
+
 </html>
