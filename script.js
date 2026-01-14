@@ -186,7 +186,22 @@ function paintTrafficLight(level) {
 
 function renderScore(score) {
   const el = document.getElementById("scoreValue");
-  if (el) el.textContent = String(score);
+    const circle = document.getElementById("progressCircle");
+    
+    if (el) el.textContent = String(score);
+    
+    // Calcular grados (360 grados = 100 puntos)
+    const degrees = (score / 100) * 360;
+    
+    // Determinar color según riesgo
+    let color = '#22c55e'; // Verde
+    if(score >= 40) color = '#f5b301'; // Amarillo
+    if(score >= 70) color = '#ef4444'; // Rojo
+
+    // Actualizar el gráfico CSS
+    if (circle) {
+        circle.style.background = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.1) 0deg)`;
+    }
 }
 
 function renderDecision(decision) {
@@ -251,3 +266,4 @@ function escapeHtml(str) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+
