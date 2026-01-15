@@ -1,221 +1,202 @@
-
-
 function calcularRiesgo() {
-  // 1) Leer valores (si están vacíos => null)
-  const km = parseNumberOrNull(document.getElementById("km")?.value);
-  const months = parseNumberOrNull(document.getElementById("months")?.value);
+  const km = leerNumeroONulo(document.getElementById("km")?.value);
+  const meses = leerNumeroONulo(document.getElementById("meses")?.value);
 
-  const failures = document.getElementById("failures")?.value ?? "";
-  const severity = document.getElementById("severity")?.value ?? "";
-  const driving = document.getElementById("driving")?.value ?? "";
-
-  const route = document.getElementById("route")?.value ?? "";       
-  const repeated = document.getElementById("repeated")?.value ?? "";  
+  const fallas = document.getElementById("fallas")?.value ?? "";
+  const severidad = document.getElementById("severidad")?.value ?? "";
+  const conduccion = document.getElementById("conduccion")?.value ?? "";
+  const ruta = document.getElementById("ruta")?.value ?? "";
+  const repetida = document.getElementById("repetida")?.value ?? "";
 
   let score = 0;
-  const reasons = [];
-  const assumptions = [];
+  const razones = [];
+  const supuestos = [];
 
-  // Uso (KM)
-  // Si falta dato +5 
   if (km === null) {
     score += 5;
-    assumptions.push("No se indicó KM desde último servicio; se asumió riesgo medio (+5).");
+    supuestos.push("No se indicó KM desde el último servicio; se asumió riesgo medio (+5).");
   } else if (km < 5000) {
     score += 5;
   } else if (km <= 10000) {
     score += 15;
-    reasons.push("Kilometraje medio desde el último servicio.");
+    razones.push("Kilometraje medio desde el último servicio.");
   } else {
     score += 25;
-    reasons.push("Alto kilometraje sin mantenimiento reciente.");
+    razones.push("Alto kilometraje sin mantenimiento reciente.");
   }
 
-  //Tiempo sin servicio (meses)
-  if (months === null) {
+  if (meses === null) {
     score += 5;
-    assumptions.push("No se indicó meses sin servicio; se asumió riesgo medio (+5).");
-  } else if (months < 3) {
+    supuestos.push("No se indicó meses sin servicio; se asumió riesgo medio (+5).");
+  } else if (meses < 3) {
     score += 2;
-  } else if (months <= 6) {
+  } else if (meses <= 6) {
     score += 5;
-    reasons.push("Tiempo prolongado sin servicio preventivo.");
+    razones.push("Tiempo prolongado sin servicio preventivo.");
   } else {
     score += 10;
-    reasons.push("Exceso de tiempo sin servicio preventivo.");
+    razones.push("Exceso de tiempo sin servicio preventivo.");
   }
 
-  //Fallas recientes (0 / 1-2 / 3+)
-  if (!failures) {
+  if (!fallas) {
     score += 5;
-    assumptions.push("No se indicó historial de fallas; se asumió riesgo medio (+5).");
-  } else if (failures === "0") {
+    supuestos.push("No se indicó historial de fallas; se asumió riesgo medio (+5).");
+  } else if (fallas === "0") {
     score += 0;
-  } else if (failures === "1") {
+  } else if (fallas === "1") {
     score += 10;
-    reasons.push("Registro de 1–2 fallas recientes.");
-  } else if (failures === "3") {
+    razones.push("Registro de 1–2 fallas recientes.");
+  } else if (fallas === "3") {
     score += 20;
-    reasons.push("Fallas recurrentes (3+ en periodo reciente).");
+    razones.push("Fallas recurrentes (3+ en periodo reciente).");
   }
 
-  if (!severity) {
+  if (!severidad) {
     score += 5;
-    assumptions.push("No se indicó severidad; se asumió riesgo medio (+5).");
-  } else if (severity === "low") {
+    supuestos.push("No se indicó severidad; se asumió riesgo medio (+5).");
+  } else if (severidad === "baja") {
     score += 5;
-  } else if (severity === "medium") {
+  } else if (severidad === "media") {
     score += 10;
-    reasons.push("Alertas de severidad media (sensores/eléctrico).");
-  } else if (severity === "high") {
+    razones.push("Alertas de severidad media (sensores/eléctrico).");
+  } else if (severidad === "alta") {
     score += 20;
-    reasons.push("Alertas críticas (motor/transmisión/frenos).");
+    razones.push("Alertas críticas (motor/transmisión/frenos).");
   }
 
-  //Conducción (smooth/normal/aggressive)
-  if (!driving) {
+  if (!conduccion) {
     score += 5;
-    assumptions.push("No se indicó conducción; se asumió riesgo medio (+5).");
-  } else if (driving === "smooth") {
+    supuestos.push("No se indicó conducción; se asumió riesgo medio (+5).");
+  } else if (conduccion === "suave") {
     score += 2;
-  } else if (driving === "normal") {
+  } else if (conduccion === "normal") {
     score += 5;
-  } else if (driving === "aggressive") {
+  } else if (conduccion === "agresiva") {
     score += 10;
-    reasons.push("Telemetría sugiere conducción agresiva (desgaste acelerado).");
+    razones.push("Telemetría sugiere conducción agresiva (desgaste acelerado).");
   }
 
-  // Ruta / operación
-  if (route) {
-    if (route === "highway") score += 3;
-    if (route === "mixed") score += 5;
-    if (route === "urban") {
+  if (ruta) {
+    if (ruta === "carretera") score += 3;
+    if (ruta === "mixta") score += 5;
+    if (ruta === "urbana") {
       score += 10;
-      reasons.push("Operación urbana: mayor desgaste de frenos/suspensión.");
+      razones.push("Operación urbana: mayor desgaste de frenos/suspensión.");
     }
   }
 
-  //Fallas repetidas (opcional)
-  if (repeated) {
-    if (repeated === "yes") {
+  if (repetida) {
+    if (repetida === "si") {
       score += 10;
-      reasons.push("Historial de falla repetida: mayor probabilidad de reincidencia.");
+      razones.push("Historial de falla repetida: mayor probabilidad de reincidencia.");
     }
   }
 
-  // score y decidir semáforo
-  score = clamp(score, 0, 100);
+  score = limitar(score, 0, 100);
 
-  const decision = decide(score);
-  paintTrafficLight(decision.level);
-  renderScore(score);
-  renderDecision(decision);
-  renderList("reasonsList", reasons.length ? reasons : ["No se detectaron factores críticos con la información proporcionada."]);
+  const decision = decidir(score);
+  pintarSemaforo(decision.nivel);
+  mostrarScore(score);
+  mostrarDecision(decision);
 
-  ensureAssumptionsCard();
-  renderList("assumptionsList", assumptions.length ? assumptions : ["Sin supuestos adicionales."]);
+  pintarLista("reasonsList", razones.length ? razones : ["No se detectaron factores críticos con la info proporcionada."]);
+
+  asegurarTarjetaSupuestos();
+  pintarLista("assumptionsList", supuestos.length ? supuestos : ["Sin supuestos adicionales."]);
 }
 
-function parseNumberOrNull(value) {
-  if (value === undefined || value === null) return null;
-  const trimmed = String(value).trim();
-  if (!trimmed) return null;
-  const n = Number(trimmed);
+function leerNumeroONulo(valor) {
+  if (valor === undefined || valor === null) return null;
+  const texto = String(valor).trim();
+  if (!texto) return null;
+  const n = Number(texto);
   return Number.isFinite(n) ? n : null;
 }
 
-function clamp(n, min, max) {
+function limitar(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-function decide(score) {
+function decidir(score) {
   if (score < 40) {
     return {
-      level: "green",
-      label: "BAJO",
-      pillClass: "pill pill--green",
-      action: "Mantener unidad en operación y continuar monitoreo.",
-      detail: "Riesgo bajo según variables actuales. Recomendada vigilancia y mantenimiento programado normal."
+      nivel: "verde",
+      etiqueta: "BAJO",
+      clasePill: "pill pill--green",
+      accion: "Mantener unidad en operación y continuar monitoreo.",
+      detalle: "Riesgo bajo con las variables actuales. Mantener plan normal y revisar de forma periódica."
     };
   }
+
   if (score < 70) {
     return {
-      level: "yellow",
-      label: "MEDIO",
-      pillClass: "pill pill--yellow",
-      action: "Programar revisión preventiva (taller / diagnóstico).",
-      detail: "Riesgo moderado: conviene inspección preventiva para evitar falla en ruta y costos correctivos."
+      nivel: "amarillo",
+      etiqueta: "MEDIO",
+      clasePill: "pill pill--yellow",
+      accion: "Programar revisión preventiva (taller / diagnóstico).",
+      detalle: "Riesgo moderado: conviene checar antes de que se convierta en falla en ruta."
     };
   }
+
   return {
-    level: "red",
-    label: "ALTO",
-    pillClass: "pill pill--red",
-    action: "Intervenir de inmediato: retirar y priorizar atención en taller.",
-    detail: "Riesgo alto: alta probabilidad de falla. Priorizar disponibilidad y seguridad operativa."
+    nivel: "rojo",
+    etiqueta: "ALTO",
+    clasePill: "pill pill--red",
+    accion: "Intervenir de inmediato: retirar y priorizar atención en taller.",
+    detalle: "Riesgo alto: alta probabilidad de falla. Priorizar seguridad y disponibilidad."
   };
 }
 
-function paintTrafficLight(level) {
-  const red = document.getElementById("light-red");
-  const yellow = document.getElementById("light-yellow");
-  const green = document.getElementById("light-green");
-  if (!red || !yellow || !green) return;
+function pintarSemaforo(nivel) {
+  const rojo = document.getElementById("light-red");
+  const amarillo = document.getElementById("light-yellow");
+  const verde = document.getElementById("light-green");
+  if (!rojo || !amarillo || !verde) return;
 
-  // reset
-  [red, yellow, green].forEach(el => {
+  [rojo, amarillo, verde].forEach(el => {
     el.classList.remove("active", "light--red", "light--yellow", "light--green");
   });
 
-  if (level === "red") {
-    red.classList.add("active", "light--red");
-  } else if (level === "yellow") {
-    yellow.classList.add("active", "light--yellow");
-  } else {
-    green.classList.add("active", "light--green");
+  if (nivel === "rojo") rojo.classList.add("active", "light--red");
+  else if (nivel === "amarillo") amarillo.classList.add("active", "light--yellow");
+  else verde.classList.add("active", "light--green");
+}
+
+function mostrarScore(score) {
+  const textoScore = document.getElementById("scoreValue");
+  const circulo = document.getElementById("progressCircle");
+
+  if (textoScore) textoScore.textContent = String(score);
+
+  const grados = (score / 100) * 360;
+
+  let color = "#22c55e";
+  if (score >= 40) color = "#f5b301";
+  if (score >= 70) color = "#ef4444";
+
+  if (circulo) {
+    circulo.style.background = `conic-gradient(${color} ${grados}deg, rgba(255,255,255,0.1) ${grados}deg)`;
   }
 }
 
-function renderScore(score) {
-  const el = document.getElementById("scoreValue");
-    const circle = document.getElementById("progressCircle");
-    
-    if (el) el.textContent = String(score);
-    
-    // (360 grados = 100 puntos)
-    const degrees = (score / 100) * 360;
-    
-    // color según riesgo
-    let color = '#22c55e'; // Verde
-    if(score >= 40) color = '#f5b301'; // Amarillo
-    if(score >= 70) color = '#ef4444'; // Rojo
-
-    // Actualizar el gráfico CSS
-    if (circle) {
-        circle.style.background = `conic-gradient(${color} ${degrees}deg, rgba(255,255,255,0.1) 0deg)`;
-    }
-}
-
-function renderDecision(decision) {
+function mostrarDecision(decision) {
   const actionText = document.getElementById("actionText");
-  const panel = document.querySelector(".results-panel");
-  if (!panel) return;
+  if (!actionText) return;
 
-  if (actionText) {
-    actionText.innerHTML = `
-      <span class="${decision.pillClass}">
-        <span class="dot"></span> ${decision.label}
-      </span>
-      <span class="divider"></span>
-      <strong>${escapeHtml(decision.action)}</strong><br/>
-      <span style="color: rgba(255,255,255,0.75)">${escapeHtml(decision.detail)}</span>
-    `;
-  }
+  actionText.innerHTML = `
+    <span class="${decision.clasePill}">
+      <span class="dot"></span> ${escaparHtml(decision.etiqueta)}
+    </span>
+    <span class="divider"></span>
+    <strong>${escaparHtml(decision.accion)}</strong><br/>
+    <span style="color: rgba(255,255,255,0.75)">${escaparHtml(decision.detalle)}</span>
+  `;
 }
 
-function renderList(listId, items) {
-  const ul = document.getElementById(listId);
+function pintarLista(idLista, items) {
+  const ul = document.getElementById(idLista);
   if (!ul) return;
+
   ul.innerHTML = "";
   items.forEach(txt => {
     const li = document.createElement("li");
@@ -224,31 +205,31 @@ function renderList(listId, items) {
   });
 }
 
-function ensureAssumptionsCard() {
+function asegurarTarjetaSupuestos() {
   if (document.getElementById("assumptionsList")) return;
 
-  const resultsPanel = document.querySelector(".results-panel");
-  if (!resultsPanel) return;
+  const panel = document.querySelector(".results-panel");
+  if (!panel) return;
 
-  // Insertar card debajo de reasons-card
-  const reasonsCard = resultsPanel.querySelector(".reasons-card");
+  const tarjetaRiesgos = panel.querySelector(".reasons-card");
   const card = document.createElement("div");
-  card.className = "reasons-card";
+  card.className = "card reasons-card";
+  card.style.marginTop = "12px";
   card.innerHTML = `
-    <h3>Supuestos / Datos incompletos:</h3>
+    <h3>Supuestos / Datos incompletos</h3>
     <ul id="assumptionsList" class="list">
       <li>Sin supuestos adicionales.</li>
     </ul>
   `;
 
-  if (reasonsCard && reasonsCard.parentNode) {
-    reasonsCard.parentNode.insertBefore(card, reasonsCard.nextSibling);
+  if (tarjetaRiesgos && tarjetaRiesgos.parentNode) {
+    tarjetaRiesgos.parentNode.insertBefore(card, tarjetaRiesgos.nextSibling);
   } else {
-    resultsPanel.appendChild(card);
+    panel.appendChild(card);
   }
 }
 
-function escapeHtml(str) {
+function escaparHtml(str) {
   return String(str)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -257,3 +238,6 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
+window.addEventListener("DOMContentLoaded", () => {
+  mostrarScore(0);
+});

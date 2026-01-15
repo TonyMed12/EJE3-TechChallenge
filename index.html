@@ -16,7 +16,7 @@
             <div class="brand-badge">
                 <span class="badge-dot"></span>
                 <div>
-                    <img src="src/images/traxion.png" width="150px" alt="">
+                    <img src="src/images/traxion.png" width="150px" alt="Traxión" />
                     <p>Agente de Mantenimiento Predictivo (Eje 3)</p>
                 </div>
             </div>
@@ -28,24 +28,49 @@
     </header>
 
     <main class="dashboard-container">
+        <section class="intro-panel">
+            <h2>¿Cómo funciona este prototipo web?</h2>
+            <p class="intro-text">
+                Este prototipo simula un <strong>mantenimiento preventivo basado en riesgo</strong>.
+                Con los datos de la unidad se calcula un <strong>score</strong> y se recomienda una acción.
+            </p>
+
+            <ul class="intro-list">
+                <li><strong>Paso 1:</strong> Ingresa los datos (pueden ir incompletos).</li>
+                <li><strong>Paso 2:</strong> Presiona <strong>Analizar Riesgo</strong> para ver semáforo + score +
+                    razones.</li>
+                <li><strong>Paso 3:</strong> Abre <strong>Opal</strong> para ver el flujo conversacional de nuestro agente de IA.
+                </li>
+            </ul>
+
+            <div class="intro-actions">
+                <a class="btn-opal"
+                    href="https://opal.google/?flow=drive:/17_DD1rDIK2EakO1D2450phwqaPXd1GwL&shared&mode=app"
+                    target="_blank" rel="noopener noreferrer">
+                    Abrir Agente de IA en Opal
+                </a>
+            </div>
+        </section>
+
         <section class="input-panel">
             <h2>Datos de la Unidad</h2>
-            <form id="riskForm" onsubmit="event.preventDefault(); calcularRiesgo();">
+
+            <form id="formRiesgo" onsubmit="event.preventDefault(); calcularRiesgo();">
                 <div class="form-group">
                     <label for="km">Kilometraje desde el último servicio</label>
                     <input type="number" id="km" placeholder="Ej. 15000" min="0" />
-                    <small>KM recorridos desde el último servicio mayor (si no lo tienes, déjalo vacío).</small>
+                    <small>KM desde el último servicio mayor (si no lo tienes, déjalo vacío).</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="months">Meses sin servicio preventivo</label>
-                    <input type="number" id="months" placeholder="Ej. 6" min="0" />
+                    <label for="meses">Meses sin servicio preventivo</label>
+                    <input type="number" id="meses" placeholder="Ej. 6" min="0" />
                     <small>Tiempo aproximado desde el último servicio preventivo.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="failures">Historial reciente de fallas</label>
-                    <select id="failures">
+                    <label for="fallas">Historial reciente de fallas</label>
+                    <select id="fallas">
                         <option value="">(Opcional) No disponible</option>
                         <option value="0">0 - Sin fallas recientes</option>
                         <option value="1">1-2 - Fallas menores aisladas</option>
@@ -55,53 +80,86 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="severity">Severidad de alertas previas</label>
-                    <select id="severity">
+                    <label for="severidad">Severidad de alertas previas</label>
+                    <select id="severidad">
                         <option value="">(Opcional) No disponible</option>
-                        <option value="low">Baja (Accesorios, Confort)</option>
-                        <option value="medium">Media (Sensores, Eléctrico)</option>
-                        <option value="high">Alta (Motor, Transmisión, Frenos)</option>
+                        <option value="baja">Baja (Accesorios, Confort)</option>
+                        <option value="media">Media (Sensores, Eléctrico)</option>
+                        <option value="alta">Alta (Motor, Transmisión, Frenos)</option>
                     </select>
-                    <small>La severidad aumenta el riesgo de falla y prioridad de taller.</small>
+                    <small>Entre más severidad, más prioridad de taller.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="driving">Estilo de conducción (Telemetría)</label>
-                    <select id="driving">
+                    <label for="conduccion">Estilo de conducción (Telemetría)</label>
+                    <select id="conduccion">
                         <option value="">(Opcional) No disponible</option>
-                        <option value="smooth">Suave / Eficiente</option>
+                        <option value="suave">Suave / Eficiente</option>
                         <option value="normal">Normal</option>
-                        <option value="aggressive">Agresiva (Frenadas bruscas / exceso vel.)</option>
+                        <option value="agresiva">Agresiva (Frenadas bruscas / exceso vel.)</option>
                     </select>
-                    <small>Conducción agresiva tiende a acelerar desgaste (frenos, suspensión, transmisión).</small>
+                    <small>Conducción agresiva acelera desgaste (frenos, suspensión, transmisión).</small>
                 </div>
+
                 <div class="form-group">
-                    <label for="route">Tipo de operación / ruta</label>
-                    <select id="route">
+                    <label for="ruta">Tipo de operación / ruta</label>
+                    <select id="ruta">
                         <option value="">(Opcional) No disponible</option>
-                        <option value="highway">Carretera</option>
-                        <option value="mixed">Mixta</option>
-                        <option value="urban">Urbana</option>
+                        <option value="carretera">Carretera</option>
+                        <option value="mixta">Mixta</option>
+                        <option value="urbana">Urbana</option>
                     </select>
                     <small>Operación urbana suele elevar desgaste por arranques, frenadas y baches.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="repeated">¿Falla repetida?</label>
-                    <select id="repeated">
+                    <label for="repetida">¿Falla repetida?</label>
+                    <select id="repetida">
                         <option value="">(Opcional) No disponible</option>
                         <option value="no">No</option>
-                        <option value="yes">Sí</option>
+                        <option value="si">Sí</option>
                     </select>
-                    <small>Una falla recurrente aumenta la probabilidad de intervención prioritaria.</small>
+                    <small>Si es repetida, sube la prioridad porque suele reincidir.</small>
                 </div>
 
-                <button type="submit" class="btn-analyze">Analizar Riesgo 🔍</button>
+                <div class="opal-callout">
+                    <div class="opal-head">
+                        <div class="opal-badge">IA</div>
+                        <div class="opal-title">
+                            <strong>Agente de IA (Opal)</strong>
+                            <span>El sitio web es simulación por reglas. El agente real está en Opal.</span>
+                        </div>
+                    </div>
+
+                    <div class="opal-actions">
+                        <a class="btn-opal"
+                            href="https://opal.google/?flow=drive:/17_DD1rDIK2EakO1D2450phwqaPXd1GwL&shared&mode=app"
+                            target="_blank" rel="noopener noreferrer">
+                            Abrir Agente en Opal
+                        </a>
+                    </div>
+
+                    <div class="opal-foot">
+                        <span class="opal-dot"></span>
+                        Recomendación: abre Opal para ver preguntas guiadas y explicación conversacional.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-analyze">Analizar Riesgo</button>
             </form>
         </section>
 
         <section class="results-panel">
             <h2>Diagnóstico de Riesgo</h2>
+
+            <div class="sim-banner">
+                <strong>Simulación</strong>
+                <span>Este diagnóstico usa reglas (no ML). Para el flujo conversacional, usa Opal.</span>
+                <a href="https://opal.google/?flow=drive:/17_DD1rDIK2EakO1D2450phwqaPXd1GwL&shared&mode=app"
+                    target="_blank" rel="noopener noreferrer">
+                    Abrir Opal
+                </a>
+            </div>
 
             <div class="traffic-light-container" aria-label="Semáforo de riesgo">
                 <div id="light-red" class="light" title="Alto"></div>
@@ -112,6 +170,7 @@
             <div class="cards">
                 <div class="card score-card">
                     <h3>Score de Riesgo</h3>
+
                     <div class="score-container">
                         <div class="circular-progress" id="progressCircle">
                             <div class="inner-circle">
@@ -120,12 +179,10 @@
                             </div>
                         </div>
                     </div>
+
                     <div style="color: rgba(255,255,255,0.70); font-size: 0.9rem;">
                         Integra variables operativas, mecánicas y de conducción.
                     </div>
-                    <!--PRUEBA-->
-                    
-                    <!--PRUEBA-->
                 </div>
 
                 <div class="card action-card">
