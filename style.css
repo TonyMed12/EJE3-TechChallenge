@@ -1,7 +1,3 @@
-/* =========================
-   Traxión – Predictive Maintenance UI (Brand Colors)
-   ========================= */
-
 :root {
     /* Traxión palette (from screenshot) */
     --traxion-lime: #D0D800;
@@ -13,7 +9,6 @@
     --traxion-ink: #1B1C1F;
     /* texto oscuro sobre lima */
 
-    /* UI neutrals */
     --bg: #0f1115;
     --surface: rgba(255, 255, 255, 0.06);
     --surface-2: rgba(255, 255, 255, 0.10);
@@ -22,7 +17,6 @@
     --text: rgba(255, 255, 255, 0.92);
     --muted: rgba(255, 255, 255, 0.68);
 
-    /* Semáforo */
     --warning: #f5b301;
     --danger: #ef4444;
     --success: #22c55e;
@@ -50,14 +44,12 @@ body {
         radial-gradient(900px 600px at 85% 20%, rgba(208, 216, 0, 0.14), transparent 60%),
         radial-gradient(1000px 700px at 50% 100%, rgba(80, 80, 88, 0.25), transparent 65%),
         var(--bg);
-    /* Para que no se repita al hacer scroll */
     background-repeat: no-repeat;
     background-attachment: fixed; 
     background-size: cover;
     min-height: 100vh;
 }
 
-/* Header */
 .main-header {
     position: sticky;
     top: 0;
@@ -121,7 +113,6 @@ body {
     }
 }
 
-/* Panels */
 .input-panel,
 .results-panel {
     border: 1px solid var(--border);
@@ -138,7 +129,6 @@ body {
     letter-spacing: 0.2px;
 }
 
-/* Form */
 form {
     display: grid;
     gap: 12px;
@@ -184,7 +174,6 @@ select:focus {
     box-shadow: 0 0 0 4px rgba(208, 216, 0, 0.16);
 }
 
-/* Primary button uses Traxión lime */
 .btn-analyze {
     width: 100%;
     border: none;
@@ -283,12 +272,11 @@ select:focus {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    /* El degradado cónico hace la magia del gráfico */
     background: conic-gradient(var(--traxion-lime) 0deg, rgba(255,255,255,0.1) 0deg);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 1s ease-out; /* Animación suave */
+    transition: background 1s ease-out;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
@@ -296,7 +284,7 @@ select:focus {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    background-color: #1a1c20; /* Color oscuro para tapar el centro */
+    background-color: #1a1c20;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -363,7 +351,7 @@ select:focus {
 }
 
 select option {
-    background-color: #1B1C1F; /* Color oscuro sólido (Traxión Ink) */
+    background-color: #1B1C1F; 
     color: #ffffff;
 }
 
@@ -379,7 +367,6 @@ select option {
     margin: 6px 0;
 }
 
-/* divider */
 .divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.10);

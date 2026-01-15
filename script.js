@@ -1,6 +1,4 @@
-/* =========================
-   Traxión – Predictive Maintenance Agent (Rules-based)
-   ========================= */
+
 
 function calcularRiesgo() {
   // 1) Leer valores (si están vacíos => null)
@@ -11,16 +9,15 @@ function calcularRiesgo() {
   const severity = document.getElementById("severity")?.value ?? "";
   const driving = document.getElementById("driving")?.value ?? "";
 
-  // Opcionales (si los agregas al HTML)
-  const route = document.getElementById("route")?.value ?? "";        // highway/mixed/urban
-  const repeated = document.getElementById("repeated")?.value ?? "";  // yes/no
+  const route = document.getElementById("route")?.value ?? "";       
+  const repeated = document.getElementById("repeated")?.value ?? "";  
 
   let score = 0;
   const reasons = [];
   const assumptions = [];
 
-  // 2) Reglas – Uso (KM)
-  // (Si falta dato, sumamos +5 por manejo conservador y lo declaramos)
+  // Uso (KM)
+  // Si falta dato +5 
   if (km === null) {
     score += 5;
     assumptions.push("No se indicó KM desde último servicio; se asumió riesgo medio (+5).");
@@ -34,7 +31,7 @@ function calcularRiesgo() {
     reasons.push("Alto kilometraje sin mantenimiento reciente.");
   }
 
-  // 3) Reglas – Tiempo sin servicio (meses)
+  //Tiempo sin servicio (meses)
   if (months === null) {
     score += 5;
     assumptions.push("No se indicó meses sin servicio; se asumió riesgo medio (+5).");
@@ -48,8 +45,7 @@ function calcularRiesgo() {
     reasons.push("Exceso de tiempo sin servicio preventivo.");
   }
 
-  // 4) Reglas – Fallas recientes (0 / 1-2 / 3+)
-  // Tu select usa values: 0, 1, 3
+  //Fallas recientes (0 / 1-2 / 3+)
   if (!failures) {
     score += 5;
     assumptions.push("No se indicó historial de fallas; se asumió riesgo medio (+5).");
@@ -63,7 +59,6 @@ function calcularRiesgo() {
     reasons.push("Fallas recurrentes (3+ en periodo reciente).");
   }
 
-  // 5) Reglas – Severidad (low/medium/high)
   if (!severity) {
     score += 5;
     assumptions.push("No se indicó severidad; se asumió riesgo medio (+5).");
@@ -77,7 +72,7 @@ function calcularRiesgo() {
     reasons.push("Alertas críticas (motor/transmisión/frenos).");
   }
 
-  // 6) Reglas – Conducción (smooth/normal/aggressive)
+  //Conducción (smooth/normal/aggressive)
   if (!driving) {
     score += 5;
     assumptions.push("No se indicó conducción; se asumió riesgo medio (+5).");
@@ -90,7 +85,7 @@ function calcularRiesgo() {
     reasons.push("Telemetría sugiere conducción agresiva (desgaste acelerado).");
   }
 
-  // 7) Reglas – Ruta / operación (opcional)
+  // Ruta / operación
   if (route) {
     if (route === "highway") score += 3;
     if (route === "mixed") score += 5;
@@ -100,7 +95,7 @@ function calcularRiesgo() {
     }
   }
 
-  // 8) Reglas – Fallas repetidas (opcional)
+  //Fallas repetidas (opcional)
   if (repeated) {
     if (repeated === "yes") {
       score += 10;
@@ -108,7 +103,7 @@ function calcularRiesgo() {
     }
   }
 
-  // 9) Normalizar score y decidir semáforo
+  // score y decidir semáforo
   score = clamp(score, 0, 100);
 
   const decision = decide(score);
@@ -117,12 +112,9 @@ function calcularRiesgo() {
   renderDecision(decision);
   renderList("reasonsList", reasons.length ? reasons : ["No se detectaron factores críticos con la información proporcionada."]);
 
-  // Si no existe assumptionsList en HTML, lo creamos dentro de results-panel
   ensureAssumptionsCard();
   renderList("assumptionsList", assumptions.length ? assumptions : ["Sin supuestos adicionales."]);
 }
-
-/* ===== Helpers ===== */
 
 function parseNumberOrNull(value) {
   if (value === undefined || value === null) return null;
@@ -190,10 +182,10 @@ function renderScore(score) {
     
     if (el) el.textContent = String(score);
     
-    // Calcular grados (360 grados = 100 puntos)
+    // (360 grados = 100 puntos)
     const degrees = (score / 100) * 360;
     
-    // Determinar color según riesgo
+    // color según riesgo
     let color = '#22c55e'; // Verde
     if(score >= 40) color = '#f5b301'; // Amarillo
     if(score >= 70) color = '#ef4444'; // Rojo
@@ -233,7 +225,6 @@ function renderList(listId, items) {
 }
 
 function ensureAssumptionsCard() {
-  // Si ya existe, no hacemos nada
   if (document.getElementById("assumptionsList")) return;
 
   const resultsPanel = document.querySelector(".results-panel");
@@ -257,7 +248,6 @@ function ensureAssumptionsCard() {
   }
 }
 
-// Seguridad mínima para HTML
 function escapeHtml(str) {
   return String(str)
     .replaceAll("&", "&amp;")
