@@ -28,13 +28,8 @@
     </header>
 
     <main class="dashboard-container">
-        <!-- =======================
-         INPUT PANEL
-         ======================= -->
         <section class="input-panel">
-            <h2>🚚 Datos de la Unidad</h2>
-
-            <!-- Nota: quitamos required para demostrar manejo de datos incompletos -->
+            <h2>Datos de la Unidad</h2>
             <form id="riskForm" onsubmit="event.preventDefault(); calcularRiesgo();">
                 <div class="form-group">
                     <label for="km">Kilometraje desde el último servicio</label>
@@ -80,8 +75,6 @@
                     </select>
                     <small>Conducción agresiva tiende a acelerar desgaste (frenos, suspensión, transmisión).</small>
                 </div>
-
-                <!-- Extra recomendado: operación / ruta -->
                 <div class="form-group">
                     <label for="route">Tipo de operación / ruta</label>
                     <select id="route">
@@ -93,7 +86,6 @@
                     <small>Operación urbana suele elevar desgaste por arranques, frenadas y baches.</small>
                 </div>
 
-                <!-- Extra recomendado: falla repetida -->
                 <div class="form-group">
                     <label for="repeated">¿Falla repetida?</label>
                     <select id="repeated">
@@ -108,9 +100,6 @@
             </form>
         </section>
 
-        <!-- =======================
-         RESULTS PANEL
-         ======================= -->
         <section class="results-panel">
             <h2>Diagnóstico de Riesgo</h2>
 
@@ -122,7 +111,7 @@
 
             <div class="cards">
                 <div class="card score-card">
-                    <h3>Score de Salud</h3>
+                    <h3>Score de Riesgo</h3>
                     <div>
                         <span id="scoreValue" class="big-number">--</span>
                         <span class="scale">/ 100</span>
@@ -149,8 +138,6 @@
                     <li>El agente analizará las variables ingresadas.</li>
                 </ul>
             </div>
-
-            <!-- El script.js crea automáticamente la sección de supuestos si hace falta -->
         </section>
     </main>
 
