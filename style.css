@@ -374,15 +374,58 @@ select option {
 
 .footer {
     max-width: 1150px;
-    margin: 10px auto 26px;
+    margin: 18px auto 28px;
     padding: 0 18px;
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 0.9rem;
 }
 
-.footer p {
-    margin: 6px 0;
+.footer-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(6px);
 }
+
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.footer-left strong {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: .2px;
+}
+
+.footer-left span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+@media (max-width: 600px) {
+    .footer-box {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-right {
+        text-align: center;
+    }
+}
+
 
 .divider {
     height: 1px;
